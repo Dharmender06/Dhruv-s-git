@@ -39,5 +39,9 @@
             } else if (userGuess > numberToGuess) {
                 document.getElementById('feedback').textContent = 'Too high! Try again.';
             } else {
-                document.getElementById('feedback').textContent = `Correct! 
-
+                document.getElementById('feedback').textContent = `Correct! You guessed the right number in ${attempts} attempts.`;
+            }
+        }
+    </script>
+</body>
+</html>

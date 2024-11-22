@@ -3,135 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock, Paper, Scissors Game</title>
+    <title>Tic-Tac-Toe Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f7f7f7;
-            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
         }
         .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        .choices {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        .choices button {
-            font-size: 20px;
+            background-color: white;
             padding: 20px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            transition: background-color 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .choices button:hover {
-            background-color: #45a049;
-        }
-        .result {
-            font-size: 24px;
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
             margin-top: 20px;
         }
-        .score {
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #e9e9e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .cell:hover {
+            background-color: #d4d4d4;
+        }
+        .status {
             font-size: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         .reset-btn {
             font-size: 18px;
             padding: 10px 20px;
             cursor: pointer;
-            background-color: #f44336;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             margin-top: 20px;
         }
         .reset-btn:hover {
-            background-color: #e53935;
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <h1>Rock, Paper, Scissors Game</h1>
+
     <div class="game-container">
-        <div class="choices">
-            <button onclick="playerChoice('rock')">Rock</button>
-            <button onclick="playerChoice('paper')">Paper</button>
-            <button onclick="playerChoice('scissors')">Scissors</button>
+        <h1>Tic-Tac-Toe</h1>
+        <div class="board" id="board">
+            <div class="cell" onclick="makeMove(0)"></div>
+            <div class="cell" onclick="makeMove(1)"></div>
+            <div class="cell" onclick="makeMove(2)"></div>
+            <div class="cell" onclick="makeMove(3)"></div>
+            <div class="cell" onclick="makeMove(4)"></div>
+            <div class="cell" onclick="makeMove(5)"></div>
+            <div class="cell" onclick="makeMove(6)"></div>
+            <div class="cell" onclick="makeMove(7)"></div>
+            <div class="cell" onclick="makeMove(8)"></div>
         </div>
-        <div class="result" id="result">
-            <p>Choose your move!</p>
-        </div>
-        <div class="score">
-            <p>Player: <span id="player-score">0</span></p>
-            <p>Computer: <span id="computer-score">0</span></p>
-        </div>
+        <div class="status" id="status">Player X's Turn</div>
         <button class="reset-btn" onclick="resetGame()">Reset Game</button>
     </div>
 
     <script>
-        let playerScore = 0;
-        let computerScore = 0;
+        let board = ['', '', '', '', '', '', '', '', '']; // Empty cells
+        let currentPlayer = 'X';
+        let gameActive = true;
 
-        const resultElement = document.getElementById('result');
-        const playerScoreElement = document.getElementById('player-score');
-        const computerScoreElement = document.getElementById('computer-score');
+        // Check if a player has won
+        function checkWinner() {
+            const winningCombination = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
 
-        function computerChoice() {
-            const choices = ['rock', 'paper', 'scissors'];
-            const randomIndex = Math.floor(Math.random() * 3);
-            return choices[randomIndex];
-        }
-
-        function determineWinner(player, computer) {
-            if (player === computer) {
-                return 'It\'s a tie!';
+            for (let combo of winningCombination) {
+                const [a, b, c] = combo;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a]; // Return winner 'X' or 'O'
+                }
             }
-            if (
-                (player === 'rock' && computer === 'scissors') ||
-                (player === 'paper' && computer === 'rock') ||
-                (player === 'scissors' && computer === 'paper')
-            ) {
-                return 'You win!';
+            return null;
+        }
+
+        // Handle player's move
+        function makeMove(index) {
+            if (board[index] === '' && gameActive) {
+                board[index] = currentPlayer;
+                document.getElementsByClassName('cell')[index].textContent = currentPlayer;
+                let winner = checkWinner();
+                
+                if (winner) {
+                    document.getElementById('status').textContent = `${winner} Wins!`;
+                    gameActive = false;
+                } else if (!board.includes('')) {
+                    document.getElementById('status').textContent = 'It\'s a Tie!';
+                    gameActive = false;
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    document.getElementById('status').textContent = `Player ${currentPlayer}'s Turn`;
+                }
             }
-            return 'Computer wins!';
         }
 
-        function updateScore(winner) {
-            if (winner === 'You win!') {
-                playerScore++;
-            } else if (winner === 'Computer wins!') {
-                computerScore++;
-            }
-            playerScoreElement.textContent = playerScore;
-            computerScoreElement.textContent = computerScore;
-        }
-
-        function playerChoice(player) {
-            const computer = computerChoice();
-            const winner = determineWinner(player, computer);
-            resultElement.innerHTML = `
-                <p>You chose: ${player}</p>
-                <p>Computer chose: ${computer}</p>
-                <p>${winner}</p>
-            `;
-            updateScore(winner);
-        }
-
+        // Reset the game
         function resetGame() {
-            playerScore = 0;
-            computerScore = 0;
-            playerScoreElement.textContent = playerScore;
-            computerScoreElement.textContent = computerScore;
-            resultElement.innerHTML = `<p>Choose your move!</p>`;
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            document.getElementById('status').textContent = `Player X's Turn`;
+            
+            const cells = document.getElementsByClassName('cell');
+            for (let cell of cells) {
+                cell.textContent = '';
+            }
         }
     </script>
+
 </body>
 </html>
